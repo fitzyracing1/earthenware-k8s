@@ -3,12 +3,13 @@
 # Prints MEASURED numbers only (nodes used, pod pending->scheduled seconds, docker stats CPU per node).
 set -euo pipefail
 cd "$(dirname "$0")/.."
-N=${PODS:-20}; CLUSTER=ek8s-bench; OUT=bench/results-$(date +%Y%m%d-%H%M%S).txt
+N=${PODS:-11}  # = VM block slots in tree.json; CLUSTER=ek8s-bench; OUT=bench/results-$(date +%Y%m%d-%H%M%S).txt
 command -v docker && command -v kind && command -v kubectl >/dev/null || { echo "need docker, kind, kubectl"; exit 1; }
 kind create cluster --name $CLUSTER --config bench/kind-config.yaml
 trap 'kind delete cluster --name $CLUSTER' EXIT
 docker build -t ghcr.io/fitzyracing1/earthenware-scheduler:dev .
 kind load docker-image ghcr.io/fitzyracing1/earthenware-scheduler:dev --name $CLUSTER
+kubectl -n kube-system create configmap earthenware-tree --from-file=deploy/tree.json
 sed 's/image: ghcr.io/imagePullPolicy: IfNotPresent\n        image: ghcr.io/' deploy/scheduler.yaml | kubectl apply -f -
 kubectl -n kube-system rollout status deploy/earthenware-scheduler --timeout=180s
 
@@ -32,6 +33,11 @@ w=[(p([c for c in i["status"]["conditions"] if c["type"]=="PodScheduled"][0]["la
 w.sort();print(f"pending_s: max={w[-1]} median={w[len(w)//2]} (1s timestamp resolution)")'
   kubectl get pod -n $ns -o jsonpath='{range .items[*]}{.spec.nodeName}{"\n"}{end}' | sort | uniq -c
   echo "docker stats (CPU% per kind node, one sample):"; docker stats --no-stream --format '{{.Name}} {{.CPUPerc}}' | grep $CLUSTER
+  if [ "$1" = earthenware ]; then
+    kubectl get nodes -o json > /tmp/n.json; kubectl get pods -A -o json > /tmp/p.json
+    go run ./cmd/earthenware-layout -tree deploy/tree.json -nodes /tmp/n.json -pods /tmp/p.json > "${OUT%.txt}-layout.json"
+    echo "tree layout: ${OUT%.txt}-layout.json"
+  fi
   kubectl delete ns $ns --wait >/dev/null
 }
 { run default-scheduler; run earthenware; } | tee "$OUT"

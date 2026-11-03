@@ -37,7 +37,7 @@ data:
           disabled: [{name: NodeResourcesBalancedAllocation}, {name: NodeResourcesFit}]
       pluginConfig:
       - name: Earthenware
-        args: {maxTempC: 85}
+        args: {maxTempC: 85, treePath: /etc/earthenware-tree/tree.json}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -53,6 +53,9 @@ spec:
       - name: scheduler
         image: ghcr.io/fitzyracing1/earthenware-scheduler:dev
         command: ["/earthenware-scheduler", "--config=/etc/earthenware/config.yaml", "--v=2"]
-        volumeMounts: [{name: config, mountPath: /etc/earthenware}]
+        volumeMounts: [{name: config, mountPath: /etc/earthenware}, {name: tree, mountPath: /etc/earthenware-tree}]
         resources: {requests: {cpu: 100m, memory: 128Mi}}
-      volumes: [{name: config, configMap: {name: earthenware-scheduler-config}}]
+      volumes: [{name: config, configMap: {name: earthenware-scheduler-config}}, {name: tree, configMap: {name: earthenware-tree}}]
+      # create with: kubectl -n kube-system create configmap earthenware-tree --from-file=deploy/tree.json
+      nodeSelector: {node-role.kubernetes.io/control-plane: ""}
+      tolerations: [{key: node-role.kubernetes.io/control-plane, operator: Exists, effect: NoSchedule}]

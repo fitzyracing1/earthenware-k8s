@@ -9,9 +9,23 @@ The [Earthenware Computer](https://github.com/fitzyracing1/earthenware-tree) ide
 
 Built out-of-tree like [kubernetes-sigs/scheduler-plugins](https://github.com/kubernetes-sigs/scheduler-plugins): `cmd/scheduler` wraps upstream `kube-scheduler` with the extra plugin. Pinned to Kubernetes **v1.31.4** modules.
 
+## Earthenware tree mapping
+The cluster layout follows [`tree.json`](deploy/tree.json) from earthenware-tree (copied verbatim): **5 beginnings, 9 steps, 15 blocks**, ternary (every parent ≤ 3 children).
+
+| tree.json | Kubernetes |
+|---|---|
+| host subtree `C` (1 beginning → 2 steps → 4 blocks, `kind: computer`) | control plane + Earthenware scheduler; gets **no** workload pods |
+| each VM beginning `VM1..VM4` (linked only to `C` via `links`) | a node group: nodes labelled `earthenware.io/vm=VMn` |
+| each block under a VM (`VM1.s1.b1` …) | one pod slot (VM1=4, VM2=4, VM3=2, VM4=1 → 11 slots) |
+
+With `treePath` set in the plugin args, the scheduler fills the tree slot by slot: VM1's blocks in order, then VM2, VM3, VM4. Filter rejects nodes outside a VM group and full groups; Score ranks earlier groups first (and fuller within a band). Only pods with `schedulerName: earthenware` occupy slots. `pkg/tree` validates the file (one host, ternary, VMs link only to host) and `cmd/earthenware-layout` emits a tree.json-compatible file (all original keys kept, plus a `"pod"` field on each occupied block) from `kubectl get nodes/pods -o json`. Tests use the real tree.json and check counts, fill order, overflow, host exclusion and round-trip. Without `treePath` the plugin falls back to plain request-based bin-packing.
+
+Assumption: one Kubernetes node per VM group (as in `bench/kind-config.yaml`); with several nodes per group, the slot cap currently applies per node, not per group.
+
 ## Install
 ```sh
 docker build -t ghcr.io/fitzyracing1/earthenware-scheduler:dev .   # push or kind-load it
+kubectl -n kube-system create configmap earthenware-tree --from-file=deploy/tree.json
 kubectl apply -f deploy/scheduler.yaml
 kubectl apply -f deploy/agent.yaml
 kubectl create configmap earthenware-agent -n kube-system --from-file=agent/agent.py --dry-run=client -o yaml | kubectl apply -f -
@@ -19,7 +33,7 @@ kubectl create configmap earthenware-agent -n kube-system --from-file=agent/agen
 Then set `schedulerName: earthenware` on pods. Config lives in the `earthenware-scheduler-config` ConfigMap (`maxTempC`, default 85 there).
 
 ## Benchmark
-`bench/run.sh` creates a 5-node kind cluster (1 control plane + 4 workers), schedules the same pod set with `default-scheduler` and `earthenware`, and records measured: nodes used, pod creation→PodScheduled seconds, pods per node, and `docker stats` CPU% per node. No dollar/watt figures are derived.
+`bench/run.sh` creates a 5-node kind cluster laid out as the tree (control plane = host `C`, 4 workers = VM1..VM4), runs 11 pods (one per slot), schedules the same pod set with `default-scheduler` and `earthenware`, and records measured: nodes used, pod creation→PodScheduled seconds, pods per node, and `docker stats` CPU% per node. No dollar/watt figures are derived.
 
 **Status: the benchmark has NOT been run yet.** The machine this was built on has no Docker, so there are no results. Run `bench/run.sh` on a host with Docker + kind + kubectl; results are saved to `bench/results-*.txt`.
 

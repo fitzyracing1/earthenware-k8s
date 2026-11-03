@@ -1,0 +1,256 @@
+{
+ "links": {
+  "VM1": "C",
+  "VM2": "C",
+  "VM3": "C",
+  "VM4": "C"
+ },
+ "nodes": [
+  {
+   "id": "C",
+   "kind": "computer",
+   "level": "beginning",
+   "parent": null,
+   "owner": "computer"
+  },
+  {
+   "id": "C.alu",
+   "kind": "computer",
+   "level": "step",
+   "parent": "C",
+   "owner": "computer"
+  },
+  {
+   "id": "C.mem",
+   "kind": "computer",
+   "level": "step",
+   "parent": "C",
+   "owner": "computer"
+  },
+  {
+   "id": "C.alu.a",
+   "kind": "computer",
+   "level": "block",
+   "parent": "C.alu",
+   "owner": "computer"
+  },
+  {
+   "id": "C.alu.z",
+   "kind": "computer",
+   "level": "block",
+   "parent": "C.alu",
+   "owner": "computer"
+  },
+  {
+   "id": "C.mem.pc",
+   "kind": "computer",
+   "level": "block",
+   "parent": "C.mem",
+   "owner": "computer"
+  },
+  {
+   "id": "C.mem.io",
+   "kind": "computer",
+   "level": "block",
+   "parent": "C.mem",
+   "owner": "computer"
+  },
+  {
+   "id": "VM1",
+   "kind": "vm",
+   "level": "beginning",
+   "parent": null,
+   "owner": "VM1"
+  },
+  {
+   "id": "VM1.s1",
+   "kind": "vm",
+   "level": "step",
+   "parent": "VM1",
+   "owner": "VM1"
+  },
+  {
+   "id": "VM1.s1.b1",
+   "kind": "vm",
+   "level": "block",
+   "parent": "VM1.s1",
+   "owner": "VM1"
+  },
+  {
+   "id": "VM1.s1.b2",
+   "kind": "vm",
+   "level": "block",
+   "parent": "VM1.s1",
+   "owner": "VM1"
+  },
+  {
+   "id": "VM1.s2",
+   "kind": "vm",
+   "level": "step",
+   "parent": "VM1",
+   "owner": "VM1"
+  },
+  {
+   "id": "VM1.s2.b1",
+   "kind": "vm",
+   "level": "block",
+   "parent": "VM1.s2",
+   "owner": "VM1"
+  },
+  {
+   "id": "VM1.s2.b2",
+   "kind": "vm",
+   "level": "block",
+   "parent": "VM1.s2",
+   "owner": "VM1"
+  },
+  {
+   "id": "VM2",
+   "kind": "vm",
+   "level": "beginning",
+   "parent": null,
+   "owner": "VM2"
+  },
+  {
+   "id": "VM2.s1",
+   "kind": "vm",
+   "level": "step",
+   "parent": "VM2",
+   "owner": "VM2"
+  },
+  {
+   "id": "VM2.s1.b1",
+   "kind": "vm",
+   "level": "block",
+   "parent": "VM2.s1",
+   "owner": "VM2"
+  },
+  {
+   "id": "VM2.s1.b2",
+   "kind": "vm",
+   "level": "block",
+   "parent": "VM2.s1",
+   "owner": "VM2"
+  },
+  {
+   "id": "VM2.s2",
+   "kind": "vm",
+   "level": "step",
+   "parent": "VM2",
+   "owner": "VM2"
+  },
+  {
+   "id": "VM2.s2.b1",
+   "kind": "vm",
+   "level": "block",
+   "parent": "VM2.s2",
+   "owner": "VM2"
+  },
+  {
+   "id": "VM2.s2.b2",
+   "kind": "vm",
+   "level": "block",
+   "parent": "VM2.s2",
+   "owner": "VM2"
+  },
+  {
+   "id": "VM3",
+   "kind": "vm",
+   "level": "beginning",
+   "parent": null,
+   "owner": "VM3"
+  },
+  {
+   "id": "VM3.s1",
+   "kind": "vm",
+   "level": "step",
+   "parent": "VM3",
+   "owner": "VM3"
+  },
+  {
+   "id": "VM3.s1.b1",
+   "kind": "vm",
+   "level": "block",
+   "parent": "VM3.s1",
+   "owner": "VM3"
+  },
+  {
+   "id": "VM3.s2",
+   "kind": "vm",
+   "level": "step",
+   "parent": "VM3",
+   "owner": "VM3"
+  },
+  {
+   "id": "VM3.s2.b1",
+   "kind": "vm",
+   "level": "block",
+   "parent": "VM3.s2",
+   "owner": "VM3"
+  },
+  {
+   "id": "VM4",
+   "kind": "vm",
+   "level": "beginning",
+   "parent": null,
+   "owner": "VM4"
+  },
+  {
+   "id": "VM4.s1",
+   "kind": "vm",
+   "level": "step",
+   "parent": "VM4",
+   "owner": "VM4"
+  },
+  {
+   "id": "VM4.s1.b1",
+   "kind": "vm",
+   "level": "block",
+   "parent": "VM4.s1",
+   "owner": "VM4"
+  }
+ ],
+ "products": [
+  {
+   "id": "P",
+   "kind": "hub",
+   "level": "beginning",
+   "parent": null,
+   "owner": "products",
+   "product": null
+  },
+  {
+   "id": "VM5",
+   "kind": "vm",
+   "level": "product",
+   "parent": "P",
+   "owner": "VM5",
+   "product": "heatgate",
+   "slot": 5
+  },
+  {
+   "id": "VM6",
+   "kind": "vm",
+   "level": "product",
+   "parent": "P",
+   "owner": "VM6",
+   "product": "llama.cpp",
+   "slot": 6
+  },
+  {
+   "id": "VM7",
+   "kind": "vm",
+   "level": "product",
+   "parent": "P",
+   "owner": "VM7",
+   "product": "valkey",
+   "slot": 7
+  }
+ ],
+ "product_links": {
+  "P": "C",
+  "VM5": "C",
+  "VM6": "C",
+  "VM7": "C"
+ }
+}

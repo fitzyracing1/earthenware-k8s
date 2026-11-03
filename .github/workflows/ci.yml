@@ -14,4 +14,4 @@ jobs:
     - name: kubeconform
       run: |
         curl -sL https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz | tar xz
-        ./kubeconform -strict -summary deploy/
+        ./kubeconform -strict -summary deploy/*.yaml
