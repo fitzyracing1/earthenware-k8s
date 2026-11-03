@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	Name          = "Earthenware"
+	Name           = "Earthenware"
 	TempAnnotation = "earthenware.io/temp-c"
 )
 

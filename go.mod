@@ -1,6 +1,6 @@
 module github.com/fitzyracing1/earthenware-k8s
 
-go 1.27.3
+go 1.23.0
 
 require (
 	k8s.io/api v0.31.4
