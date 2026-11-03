@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata: {name: earthenware-agent, namespace: kube-system}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata: {name: earthenware-agent}
+rules: [{apiGroups: [""], resources: [nodes], verbs: [get, patch]}]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata: {name: earthenware-agent}
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: ClusterRole, name: earthenware-agent}
+subjects: [{kind: ServiceAccount, name: earthenware-agent, namespace: kube-system}]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: earthenware-agent, namespace: kube-system}
+data: {}  # populated by: kubectl create configmap earthenware-agent --from-file=agent/agent.py -n kube-system --dry-run=client -o yaml | kubectl apply -f -
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata: {name: earthenware-agent, namespace: kube-system}
+spec:
+  selector: {matchLabels: {app: earthenware-agent}}
+  template:
+    metadata: {labels: {app: earthenware-agent}}
+    spec:
+      serviceAccountName: earthenware-agent
+      tolerations: [{operator: Exists}]
+      containers:
+      - name: agent
+        image: python:3.12-slim
+        command: ["python3", "/opt/earthenware/agent.py"]
+        env: [{name: NODE_NAME, valueFrom: {fieldRef: {fieldPath: spec.nodeName}}}]
+        resources: {requests: {cpu: 10m, memory: 32Mi}}
+        volumeMounts:
+        - {name: code, mountPath: /opt/earthenware}
+        - {name: thermal, mountPath: /sys/class/thermal, readOnly: true}
+      volumes:
+      - {name: code, configMap: {name: earthenware-agent}}
+      - {name: thermal, hostPath: {path: /sys/class/thermal}}

@@ -1,0 +1,29 @@
+namespace/bench-default-scheduler created
+== scheduler=default-scheduler pods=11
+nodes_used: 4
+pending_s: max=0.0 median=0.0 (1s timestamp resolution)
+      2 ek8s-bench-worker
+      3 ek8s-bench-worker2
+      3 ek8s-bench-worker3
+      3 ek8s-bench-worker4
+docker stats (CPU% per kind node, one sample):
+ek8s-bench-worker3 1.62%
+ek8s-bench-worker2 16.16%
+ek8s-bench-worker4 16.11%
+ek8s-bench-worker 1.37%
+ek8s-bench-control-plane 9.19%
+namespace/bench-earthenware created
+== scheduler=earthenware pods=11
+nodes_used: 4
+pending_s: max=0.0 median=0.0 (1s timestamp resolution)
+      4 ek8s-bench-worker
+      4 ek8s-bench-worker2
+      2 ek8s-bench-worker3
+      1 ek8s-bench-worker4
+docker stats (CPU% per kind node, one sample):
+ek8s-bench-worker3 9.09%
+ek8s-bench-worker2 6.24%
+ek8s-bench-worker4 5.93%
+ek8s-bench-worker 7.41%
+ek8s-bench-control-plane 5.83%
+tree layout: bench/results-20261102-205707-layout.json
