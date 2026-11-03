@@ -3,7 +3,9 @@
 # Prints MEASURED numbers only (nodes used, pod pending->scheduled seconds, docker stats CPU per node).
 set -euo pipefail
 cd "$(dirname "$0")/.."
-N=${PODS:-11}  # = VM block slots in tree.json; CLUSTER=ek8s-bench; OUT=bench/results-$(date +%Y%m%d-%H%M%S).txt
+N=${PODS:-11}  # = VM block slots in tree.json
+CLUSTER=ek8s-bench
+OUT=bench/results-$(date +%Y%m%d-%H%M%S).txt
 command -v docker && command -v kind && command -v kubectl >/dev/null || { echo "need docker, kind, kubectl"; exit 1; }
 kind create cluster --name $CLUSTER --config bench/kind-config.yaml
 trap 'kind delete cluster --name $CLUSTER' EXIT
